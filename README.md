@@ -62,185 +62,213 @@ Devuelve:
 
 ```json
 {
-  "ast": {
+  "tables": {
     "Persona": {
-      "nombre": {
-        "column": "nombre",
-        "tipo": "String",
-        "especificaciones": {
-          "not null": true,
-          "unique": true
-        }
-      },
-      "edad": {
-        "column": "edad",
-        "tipo": "Integer",
-        "especificaciones": {
-          "default": "18"
-        }
-      },
-      "nacimiento": {
-        "column": "nacimiento",
-        "tipo": "Date",
-        "especificaciones": {
-          "null": true
-        }
-      },
-      "domicilio": {
-        "column": "domicilio",
-        "tipo": "String",
-        "especificaciones": {
-          "null": true
-        }
-      },
-      "descripcion": {
-        "column": "descripcion",
-        "tipo": "String",
-        "especificaciones": {
-          "default": true
+      "columns": {
+        "nombre": {
+          "name": "nombre",
+          "type": "String",
+          "spec": {
+            "not null": true,
+            "unique": true
+          }
+        },
+        "edad": {
+          "name": "edad",
+          "type": "Integer",
+          "spec": {
+            "default": "18"
+          }
+        },
+        "nacimiento": {
+          "name": "nacimiento",
+          "type": "Date",
+          "spec": {
+            "null": true
+          }
+        },
+        "domicilio": {
+          "name": "domicilio",
+          "type": "String",
+          "spec": {
+            "null": true
+          }
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "String",
+          "spec": {
+            "default": true
+          }
         }
       }
     },
     "Cliente": {
-      "persona": {
-        "column": "persona",
-        "tipo": "Persona",
-        "multiplicador": "1"
-      },
-      "perfiles_en_empresa": {
-        "column": "perfiles_en_empresa",
-        "tipo": "Perfil_en_empresa",
-        "multiplicador": "N"
+      "columns": {
+        "persona": {
+          "name": "persona",
+          "type": "Persona",
+          "multiplier": "1"
+        },
+        "perfiles_en_empresa": {
+          "name": "perfiles_en_empresa",
+          "type": "Perfil_en_empresa",
+          "multiplier": "N"
+        }
       }
     },
     "Perfil_en_empresa": {
-      "empresa": {
-        "column": "empresa",
-        "tipo": "Empresa",
-        "multiplicador": "1"
+      "columns": {
+        "empresa": {
+          "name": "empresa",
+          "type": "Empresa",
+          "multiplier": "1"
+        }
       }
     },
     "Empresa": {
-      "nombre": {
-        "column": "nombre",
-        "tipo": "String"
-      },
-      "fecha_de_inicio": {
-        "column": "fecha_de_inicio",
-        "tipo": "Date"
-      },
-      "sector": {
-        "column": "sector",
-        "tipo": "String"
-      },
-      "industria": {
-        "column": "industria",
-        "tipo": "String"
+      "columns": {
+        "nombre": {
+          "name": "nombre",
+          "type": "String"
+        },
+        "fecha_de_inicio": {
+          "name": "fecha_de_inicio",
+          "type": "Date"
+        },
+        "sector": {
+          "name": "sector",
+          "type": "String"
+        },
+        "industria": {
+          "name": "industria",
+          "type": "String"
+        }
       }
     },
     "Producto": {
-      "modelo": {
-        "column": "modelo",
-        "tipo": "String"
-      },
-      "descripcion": {
-        "column": "descripcion",
-        "tipo": "String"
-      },
-      "precio_unitario": {
-        "column": "precio_unitario",
-        "tipo": "Float"
-      },
-      "moneda": {
-        "column": "moneda",
-        "tipo": "String",
-        "especificaciones": {
-          "default": "Euro",
-          "options": [
-            "Euro",
-            "Dólar"
-          ]
+      "columns": {
+        "modelo": {
+          "name": "modelo",
+          "type": "String"
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "String"
+        },
+        "precio_unitario": {
+          "name": "precio_unitario",
+          "type": "Float"
+        },
+        "moneda": {
+          "name": "moneda",
+          "type": "String",
+          "spec": {
+            "default": "Euro",
+            "options": [
+              "Euro",
+              "Dólar"
+            ]
+          }
         }
       }
     },
     "Proveedor": {
-      "empresa": {
-        "column": "empresa",
-        "tipo": "Empresa",
-        "multiplicador": "1"
+      "columns": {
+        "empresa": {
+          "name": "empresa",
+          "type": "Empresa",
+          "multiplier": "1"
+        }
       }
     },
-    "Factura": {},
+    "Factura": {
+      "columns": {}
+    },
     "Pedido_de_compra": {
-      "cliente": {
-        "column": "cliente",
-        "tipo": "Cliente",
-        "multiplicador": "1"
-      },
-      "producto_de_pedido_de_compra": {
-        "column": "producto_de_pedido_de_compra",
-        "tipo": "Unidad_de_pedido_de_compra",
-        "multiplicador": "N"
+      "columns": {
+        "cliente": {
+          "name": "cliente",
+          "type": "Cliente",
+          "multiplier": "1"
+        },
+        "producto_de_pedido_de_compra": {
+          "name": "producto_de_pedido_de_compra",
+          "type": "Unidad_de_pedido_de_compra",
+          "multiplier": "N"
+        }
       }
     },
     "Unidad_de_pedido_de_compra": {
-      "producto": {
-        "column": "producto",
-        "tipo": "Producto",
-        "multiplicador": "1"
-      },
-      "cantidad": {
-        "column": "cantidad",
-        "tipo": "Integer"
+      "columns": {
+        "producto": {
+          "name": "producto",
+          "type": "Producto",
+          "multiplier": "1"
+        },
+        "cantidad": {
+          "name": "cantidad",
+          "type": "Integer"
+        }
       }
     },
     "Albaran": {
-      "procesos_de_compra": {
-        "column": "procesos_de_compra",
-        "tipo": "Proceso_de_compra",
-        "multiplicador": "N"
+      "columns": {
+        "procesos_de_compra": {
+          "name": "procesos_de_compra",
+          "type": "Proceso_de_compra",
+          "multiplier": "N"
+        }
       }
     },
     "Venta": {
-      "procesos_de_venta": {
-        "column": "procesos_de_venta",
-        "tipo": "Proceso_de_venta",
-        "multiplicador": "N"
+      "columns": {
+        "procesos_de_venta": {
+          "name": "procesos_de_venta",
+          "type": "Proceso_de_venta",
+          "multiplier": "N"
+        }
       }
     },
-    "Compra": {},
+    "Compra": {
+      "columns": {}
+    },
     "Proceso_de_venta": {
-      "detalles": {
-        "column": "detalles",
-        "tipo": "String"
+      "columns": {
+        "detalles": {
+          "name": "detalles",
+          "type": "String"
+        }
       }
     },
     "Proceso_de_compra": {
-      "detalles": {
-        "column": "detalles",
-        "tipo": "String",
-        "especificaciones": {
-          "unique": true,
-          "not null": true
+      "columns": {
+        "detalles": {
+          "name": "detalles",
+          "type": "String",
+          "spec": {
+            "unique": true,
+            "not null": true
+          }
         }
       }
     }
   },
   "creationOrder": [
+    "Persona",
+    "Cliente",
+    "Perfil_en_empresa",
+    "Empresa",
+    "Producto",
     "Proveedor",
     "Factura",
     "Pedido_de_compra",
+    "Unidad_de_pedido_de_compra",
     "Albaran",
     "Venta",
     "Compra",
-    "Cliente",
-    "Unidad_de_pedido_de_compra",
-    "Proceso_de_compra",
     "Proceso_de_venta",
-    "Persona",
-    "Perfil_en_empresa",
-    "Producto",
-    "Empresa"
+    "Proceso_de_compra"
   ]
 }
 ```
