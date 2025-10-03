@@ -150,8 +150,8 @@
         peg$c6 = function(col) { return columnsToObject(col) },
         peg$c7 = "=",
         peg$c8 = peg$literalExpectation("=", false),
-        peg$c9 = function(token1, column, token2, tipo) { return { column, ...tipo } },
-        peg$c10 = function(token1, tipo, multiplicador, especificaciones) { return { tipo, multiplicador: multiplicador || undefined, especificaciones: Object.keys(especificaciones).length ? especificaciones : undefined } },
+        peg$c9 = function(token1, column, token2, tipo) { return { name: column, ...tipo } },
+        peg$c10 = function(token1, tipo, multiplicador, especificaciones) { return { type: tipo, multiplier: multiplicador || undefined, spec: Object.keys(especificaciones).length ? especificaciones : undefined } },
         peg$c11 = "*",
         peg$c12 = peg$literalExpectation("*", false),
         peg$c13 = "1",
@@ -1397,7 +1397,9 @@
             const obj = {};
             for(let index=0; index<tables.length; index++) {
               const table = tables[index];
-              obj[table.table] = table.composition;
+              obj[table.table] = {
+                columns: table.composition
+              };
             }
             return obj;
         };
@@ -1406,7 +1408,7 @@
             const obj = {};
             for(let index=0; index<columns.length; index++) {
               const column = columns[index];
-              obj[column.column] = column;
+              obj[column.name] = column;
             }
             return obj;
         };
@@ -1460,7 +1462,7 @@
         const getOutputFrom = function(astList) {
             const ast = tablesToObject(astList);
             const creationOrder = getTableCreationOrder(ast);
-            return { ast, creationOrder };
+            return { tables: ast, creationOrder };
         };
 
 

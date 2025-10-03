@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx nodemon -w 'database-designer-language.pegjs' -w test -e 'pegjs,model' -x 'npm run build'",
+    "dev": "npx nodemon -w 'database-designer-language.pegjs' -w test/input -e 'pegjs,model' -x 'npm run build'",
     "build": "sh build.sh && node fix.js && node test.js",
     "test": "node test.js"
   },

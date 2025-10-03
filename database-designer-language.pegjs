@@ -4,7 +4,9 @@
         const obj = {};
         for(let index=0; index<tables.length; index++) {
           const table = tables[index];
-          obj[table.table] = table.composition;
+          obj[table.table] = {
+            columns: table.composition
+          };
         }
         return obj;
     };
@@ -13,7 +15,7 @@
         const obj = {};
         for(let index=0; index<columns.length; index++) {
           const column = columns[index];
-          obj[column.column] = column;
+          obj[column.name] = column;
         }
         return obj;
     };
@@ -67,7 +69,7 @@
     const getOutputFrom = function(astList) {
         const ast = tablesToObject(astList);
         const creationOrder = getTableCreationOrder(ast);
-        return { ast, creationOrder };
+        return { tables: ast, creationOrder };
     };
 
 }
@@ -93,14 +95,14 @@ Column_definition =
     column:Sql_word
     token2:(_* "=" _*)
     tipo:Column_type
-        { return { column, ...tipo } }
+        { return { name: column, ...tipo } }
 
 Column_type =
     token1:(_*)
     tipo:Sql_word
     multiplicador:Column_multiplier?
     especificaciones:Column_specifications?
-        { return { tipo, multiplicador: multiplicador || undefined, especificaciones: Object.keys(especificaciones).length ? especificaciones : undefined } }
+        { return { type: tipo, multiplier: multiplicador || undefined, spec: Object.keys(especificaciones).length ? especificaciones : undefined } }
     
 Column_multiplier = 
     token1:(_* "*" _*)
