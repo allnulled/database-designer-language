@@ -1,0 +1,51 @@
+Persona {
+  nombre = String { not null unique }
+  edad = Integer { default 18 }
+  nacimiento = Date { null }
+  domicilio = String { null }
+  descripcion = String { default ""}
+}
+Cliente {
+  persona = Persona * 1 {}
+  perfiles_en_empresa = Perfil_en_empresa * N {}
+}
+Perfil_en_empresa {
+  empresa = Empresa * 1 {}
+}
+Empresa {
+  nombre = String {}
+  fecha_de_inicio = Date {}
+  sector = String {}
+  industria = String {}
+}
+Producto {
+  modelo = String {}
+  descripcion = String {}
+  precio_unitario = Float {}
+  moneda = String { default "Euro" options { "Euro" "Dólar" } }
+}
+Proveedor {
+  empresa = Empresa * 1 {}
+}
+Factura {}
+Pedido_de_compra {
+  cliente = Cliente * 1 {}
+  producto_de_pedido_de_compra = Unidad_de_pedido_de_compra * N {}
+}
+Unidad_de_pedido_de_compra {
+  producto = Producto * 1 {}
+  cantidad = Integer {}
+}
+Albaran {
+  procesos_de_compra = Proceso_de_compra * N {}
+}
+Venta {
+  procesos_de_venta = Proceso_de_venta * N {}
+}
+Compra {}
+Proceso_de_venta {
+  detalles = String {}
+}
+Proceso_de_compra {
+  detalles = String { unique not null }
+}
