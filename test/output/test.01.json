@@ -43,7 +43,10 @@
           "type": "VARCHAR(255)",
           "spec": {
             "unique": true,
-            "null": true
+            "null": true,
+            "extra": {
+              "formtype": "email"
+            }
           }
         },
         "telefono": {

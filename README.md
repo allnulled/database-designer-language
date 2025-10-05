@@ -11,7 +11,7 @@ Persona {
   nacimiento = DATETIME { null }
   domicilio = VARCHAR(255) { null }
   descripcion = VARCHAR(255) { default "" }
-  email = VARCHAR(255) { unique null {{ { "formtype": "email" } }}
+  email = VARCHAR(255) { unique null extra {{ { "formtype": "email" } }} }
   telefono = VARCHAR(20) { null extra {{ { "formtype": "telephone" } }} }
   genero = VARCHAR(20) { null options { "Masculino" "Femenino" "Otro" } }
 }
@@ -166,7 +166,10 @@ Devuelve:
           "type": "VARCHAR(255)",
           "spec": {
             "unique": true,
-            "null": true
+            "null": true,
+            "extra": {
+              "formtype": "email"
+            }
           }
         },
         "telefono": {
