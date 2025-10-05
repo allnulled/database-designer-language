@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database designer language | Tester</title>
+    <script src="database-designer-language.js"></script>
+</head>
+<body>
+    <table style="width:100%;">
+        <tbody>
+            <tr>
+                <td style="width: 100%;">
+                    Diseño de base de datos
+                </td>
+                <td style="width: 1%;">
+                    <div id="source_buttons_box">
+                        <button onclick="compileSource()">Compilar</button>
+                    </div>
+                    <div id="output_buttons_box">
+                        <button onclick="showSource()">Volver</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div id="source_box">
+        <textarea id="source" spellcheck="false"></textarea>
+    </div>
+    <div id="output_box">
+        <textarea id="output" spellcheck="false"></textarea>
+    </div>
+    <style>
+        textarea#source,
+        textarea#output {
+            width: 100%;
+            height: 300px;
+            font-size: 11px;
+            resize: vertical;
+        }
+    </style>
+    <script>
+        const getId = document.getElementById.bind(document);
+        const showSource = function() {
+            getId("source_box").style.display = "block";
+            getId("source_buttons_box").style.display = "block";
+            getId("output_box").style.display = "none";
+            getId("output_buttons_box").style.display = "none";
+        };
+        const showOutput = function() {
+            getId("source_box").style.display = "none";
+            getId("source_buttons_box").style.display = "none";
+            getId("output_box").style.display = "block";
+            getId("output_buttons_box").style.display = "block";
+        };
+        const compileSource = function() {
+            const source = getId("source").value;
+            const ast = DatabaseDesignerLanguage.parse(source);
+            getId("output").value = ast.sql.join("\n\n");
+            showOutput();
+        };
+        window.addEventListener("load", function() {
+            showSource();
+        });
+    </script>
+</body>
+</html>

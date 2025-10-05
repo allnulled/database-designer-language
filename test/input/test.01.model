@@ -3,49 +3,109 @@ Persona {
   edad = INTEGER { default 18 }
   nacimiento = DATETIME { null }
   domicilio = VARCHAR(255) { null }
-  descripcion = VARCHAR(255) { default ""}
+  descripcion = VARCHAR(255) { default "" }
+  email = VARCHAR(255) { unique null }
+  telefono = VARCHAR(20) { null }
+  genero = VARCHAR(20) { null options { "Masculino" "Femenino" "Otro" } }
 }
+
 Cliente {
   persona = Persona * 1 {}
   perfiles_en_empresa = Perfil_en_empresa * N {}
+  fecha_registro = DATETIME { default CURRENT_TIMESTAMP }
+  estado = VARCHAR(20) { default "Activo" options { "Activo" "Inactivo" "Suspendido" } }
 }
+
 Perfil_en_empresa {
+  cliente = Cliente * 1 {}
   empresa = Empresa * 1 {}
+  cargo = VARCHAR(255) { null }
+  fecha_ingreso = DATETIME { null }
+  activo = BOOLEAN { default true }
 }
+
 Empresa {
-  nombre = VARCHAR(255) {}
-  fecha_de_inicio = DATETIME {}
-  sector = VARCHAR(255) {}
-  industria = VARCHAR(255) {}
+  nombre = VARCHAR(255) { not null unique }
+  fecha_de_inicio = DATETIME { null }
+  sector = VARCHAR(255) { null }
+  industria = VARCHAR(255) { null }
+  direccion_fiscal = VARCHAR(255) { null }
+  pais = VARCHAR(100) { null }
+  email_contacto = VARCHAR(255) { null }
 }
+
 Producto {
-  modelo = VARCHAR(255) {}
-  descripcion = VARCHAR(255) {}
-  precio_unitario = FLOAT {}
+  modelo = VARCHAR(255) { not null unique }
+  descripcion = VARCHAR(255) { null }
+  precio_unitario = FLOAT { not null }
   moneda = VARCHAR(255) { default "Euro" options { "Euro" "Dólar" } }
+  stock_actual = INTEGER { default 0 }
+  sku = VARCHAR(100) { unique null }
 }
+
 Proveedor {
   empresa = Empresa * 1 {}
+  imagen = VARCHAR(255) { null }
+  descripcion = VARCHAR(255) { null }
+  telefono_contacto = VARCHAR(20) { null }
+  email_contacto = VARCHAR(255) { null }
 }
-Factura {}
+
+Factura {
+  numero = VARCHAR(50) { not null unique }
+  cliente = Cliente * 1 {}
+  fecha_emision = DATETIME { default CURRENT_TIMESTAMP }
+  monto_total = FLOAT { not null }
+  moneda = VARCHAR(20) { default "Euro" options { "Euro" "Dólar" } }
+  estado = VARCHAR(20) { default "Pendiente" options { "Pendiente" "Pagada" "Cancelada" } }
+}
+
 Pedido_de_compra {
   cliente = Cliente * 1 {}
   producto_de_pedido_de_compra = Unidad_de_pedido_de_compra * N {}
+  fecha_pedido = DATETIME { default CURRENT_TIMESTAMP }
+  estado = VARCHAR(20) { default "Solicitado" options { "Solicitado" "Procesado" "Enviado" "Cancelado" } }
 }
+
 Unidad_de_pedido_de_compra {
+  pedido = Pedido_de_compra * 1 {}
   producto = Producto * 1 {}
-  cantidad = INTEGER {}
+  cantidad = INTEGER { not null }
+  precio_unitario = FLOAT { null }
 }
-Albaran {
-  procesos_de_compra = Proceso_de_compra * N {}
-}
-Venta {
-  procesos_de_venta = Proceso_de_venta * N {}
-}
-Compra {}
-Proceso_de_venta {
-  detalles = VARCHAR(255) {}
-}
+
 Proceso_de_compra {
   detalles = VARCHAR(255) { unique not null }
+  producto = Producto * 1 {}
+  cantidad = INTEGER { not null }
+  precio_unitario = FLOAT { not null }
+}
+
+Albaran {
+  procesos_de_compra = Proceso_de_compra * N {}
+  fecha_entrega = DATETIME { default CURRENT_TIMESTAMP }
+  numero_albaran = VARCHAR(50) { not null unique }
+  observaciones = VARCHAR(255) { null }
+}
+
+Proceso_de_venta {
+  detalles = VARCHAR(255) { not null }
+  producto = Producto * 1 {}
+  cantidad = INTEGER { not null }
+  precio_unitario = FLOAT { not null }
+}
+
+Venta {
+  procesos_de_venta = Proceso_de_venta * N {}
+  fecha_venta = DATETIME { default CURRENT_TIMESTAMP }
+  total = FLOAT { not null }
+  moneda = VARCHAR(20) { default "Euro" }
+}
+
+Compra {
+  proveedor = Proveedor * 1 {}
+  fecha_compra = DATETIME { default CURRENT_TIMESTAMP }
+  total = FLOAT { not null }
+  moneda = VARCHAR(20) { default "Euro" }
+  estado = VARCHAR(20) { default "Pendiente" options { "Pendiente" "Completada" "Cancelada" } }
 }

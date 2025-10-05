@@ -116,10 +116,10 @@
                 sql += `,\n  ${columnId} INTEGER REFERENCES ${columnType} (id)`;
             } else if(columnMetadata.multiplier === "N") {
                 let sqlIntermediate = `CREATE TABLE x_${tableId}_x_${columnType} (`;
-                sqlIntermediate += `  id INTEGER PRIMARY KEY AUTOINCREMENT,`;
-                sqlIntermediate += `  id_${tableId} INTEGER REFERENCES ${columnType} (id),`;
-                sqlIntermediate += `  id_${columnType} INTEGER REFERENCES ${columnType} (id)`;
-                sqlIntermediate += `)`;
+                sqlIntermediate += `\n  id INTEGER PRIMARY KEY AUTOINCREMENT,`;
+                sqlIntermediate += `\n  id_${tableId} INTEGER REFERENCES ${columnType} (id),`;
+                sqlIntermediate += `\n  id_${columnType} INTEGER REFERENCES ${columnType} (id)`;
+                sqlIntermediate += `\n);`;
                 sqlIntermediateTablesSentences.push(sqlIntermediate);
             }
           }
@@ -202,7 +202,7 @@ Column_type =
     tipo:Sql_word_for_column_type
     multiplicador:Column_multiplier?
     especificaciones:Column_specifications?
-        { return { type: tipo, multiplier: multiplicador || undefined, spec: Object.keys(especificaciones).length ? especificaciones : undefined } }
+        { return { type: tipo, multiplier: multiplicador || undefined, spec: Object.keys(especificaciones || {}).length ? especificaciones : undefined } }
     
 Sql_word_for_column_type = 
     word:Sql_word
@@ -240,7 +240,7 @@ Column_clause_for_unique = "unique" { return { tipo: "unique", arg: true } }
 
 Column_clause_for_default = 
     token1:("default" _+)
-    val:(Text_unit / Number_unit)
+    val:(Text_unit / Number_unit / Expression_unit)
         { return { tipo: "default", arg: val } }
 
 Column_clause_for_options = 
@@ -254,6 +254,8 @@ Column_clause_for_option = _* t:Text_unit { return t }
 Text_unit = '"' (!('"') .)* '"' { return JSON.parse(text()) }
 
 Number_unit = [0-9]+ ("." [0-9]+)? { return text().trim() }
+
+Expression_unit = Sql_word { return text().trim() }
 
 Sql_word = [A-Za-z_] [A-Za-z_$]* { return text().trim() }
 
