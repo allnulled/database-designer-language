@@ -230,13 +230,15 @@ Column_specification =
         Column_clause_for_null /
         Column_clause_for_unique /
         Column_clause_for_default /
-        Column_clause_for_options
+        Column_clause_for_options / 
+        Column_clause_for_extras
     )
         { return specification }
 
 Column_clause_for_not_null = "not null" { return { tipo: "not null", arg: true } }
 Column_clause_for_null = "null" { return { tipo: "null", arg: true } }
 Column_clause_for_unique = "unique" { return { tipo: "unique", arg: true } }
+Column_clause_for_extras = "extra" _* "{{" cont:Negate_double_curly_close "}}" { return { tipo: "extra", arg: cont }}
 
 Column_clause_for_default = 
     token1:("default" _+)
@@ -258,6 +260,8 @@ Number_unit = [0-9]+ ("." [0-9]+)? { return text().trim() }
 Expression_unit = Sql_word { return text().trim() }
 
 Sql_word = [A-Za-z_] [A-Za-z_$]* { return text().trim() }
+
+Negate_double_curly_close = (!("}}") .)* { return JSON.parse(text().trim()) }
 
 EOL = ___
 
