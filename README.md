@@ -6,11 +6,11 @@ Lenguaje para diseñar bases de datos tipo SQL.
 
 ```
 Persona {
-  nombre = String { not null unique }
-  edad = Integer { default 18 }
-  nacimiento = Date { null }
-  domicilio = String { null }
-  descripcion = String { default ""}
+  nombre = VARCHAR(255) { not null unique }
+  edad = INTEGER { default 18 }
+  nacimiento = DATETIME { null }
+  domicilio = VARCHAR(255) { null }
+  descripcion = VARCHAR(255) { default ""}
 }
 Cliente {
   persona = Persona * 1 {}
@@ -20,16 +20,16 @@ Perfil_en_empresa {
   empresa = Empresa * 1 {}
 }
 Empresa {
-  nombre = String {}
-  fecha_de_inicio = Date {}
-  sector = String {}
-  industria = String {}
+  nombre = VARCHAR(255) {}
+  fecha_de_inicio = DATETIME {}
+  sector = VARCHAR(255) {}
+  industria = VARCHAR(255) {}
 }
 Producto {
-  modelo = String {}
-  descripcion = String {}
+  modelo = VARCHAR(255) {}
+  descripcion = VARCHAR(255) {}
   precio_unitario = Float {}
-  moneda = String { default "Euro" options { "Euro" "Dólar" } }
+  moneda = VARCHAR(255) { default "Euro" options { "Euro" "Dólar" } }
 }
 Proveedor {
   empresa = Empresa * 1 {}
@@ -41,7 +41,7 @@ Pedido_de_compra {
 }
 Unidad_de_pedido_de_compra {
   producto = Producto * 1 {}
-  cantidad = Integer {}
+  cantidad = INTEGER {}
 }
 Albaran {
   procesos_de_compra = Proceso_de_compra * N {}
@@ -51,10 +51,10 @@ Venta {
 }
 Compra {}
 Proceso_de_venta {
-  detalles = String {}
+  detalles = VARCHAR(255) {}
 }
 Proceso_de_compra {
-  detalles = String { unique not null }
+  detalles = VARCHAR(255) { unique not null }
 }
 ```
 
@@ -67,7 +67,7 @@ Devuelve:
       "columns": {
         "nombre": {
           "name": "nombre",
-          "type": "String",
+          "type": "VARCHAR(255)",
           "spec": {
             "not null": true,
             "unique": true
@@ -75,31 +75,37 @@ Devuelve:
         },
         "edad": {
           "name": "edad",
-          "type": "Integer",
+          "type": "INTEGER",
           "spec": {
             "default": "18"
           }
         },
         "nacimiento": {
           "name": "nacimiento",
-          "type": "Date",
+          "type": "DATETIME",
           "spec": {
             "null": true
           }
         },
         "domicilio": {
           "name": "domicilio",
-          "type": "String",
+          "type": "VARCHAR(255)",
           "spec": {
             "null": true
           }
         },
         "descripcion": {
           "name": "descripcion",
-          "type": "String",
+          "type": "VARCHAR(255)",
           "spec": {
             "default": true
           }
+        }
+      },
+      "relations": {
+        "active": {},
+        "passive": {
+          "Cliente": "1"
         }
       }
     },
@@ -115,6 +121,15 @@ Devuelve:
           "type": "Perfil_en_empresa",
           "multiplier": "N"
         }
+      },
+      "relations": {
+        "active": {
+          "Persona": "1",
+          "Perfil_en_empresa": "N"
+        },
+        "passive": {
+          "Pedido_de_compra": "1"
+        }
       }
     },
     "Perfil_en_empresa": {
@@ -124,25 +139,40 @@ Devuelve:
           "type": "Empresa",
           "multiplier": "1"
         }
+      },
+      "relations": {
+        "active": {
+          "Empresa": "1"
+        },
+        "passive": {
+          "Cliente": "N"
+        }
       }
     },
     "Empresa": {
       "columns": {
         "nombre": {
           "name": "nombre",
-          "type": "String"
+          "type": "VARCHAR(255)"
         },
         "fecha_de_inicio": {
           "name": "fecha_de_inicio",
-          "type": "Date"
+          "type": "DATETIME"
         },
         "sector": {
           "name": "sector",
-          "type": "String"
+          "type": "VARCHAR(255)"
         },
         "industria": {
           "name": "industria",
-          "type": "String"
+          "type": "VARCHAR(255)"
+        }
+      },
+      "relations": {
+        "active": {},
+        "passive": {
+          "Perfil_en_empresa": "1",
+          "Proveedor": "1"
         }
       }
     },
@@ -150,19 +180,19 @@ Devuelve:
       "columns": {
         "modelo": {
           "name": "modelo",
-          "type": "String"
+          "type": "VARCHAR(255)"
         },
         "descripcion": {
           "name": "descripcion",
-          "type": "String"
+          "type": "VARCHAR(255)"
         },
         "precio_unitario": {
           "name": "precio_unitario",
-          "type": "Float"
+          "type": "FLOAT"
         },
         "moneda": {
           "name": "moneda",
-          "type": "String",
+          "type": "VARCHAR(255)",
           "spec": {
             "default": "Euro",
             "options": [
@@ -170,6 +200,12 @@ Devuelve:
               "Dólar"
             ]
           }
+        }
+      },
+      "relations": {
+        "active": {},
+        "passive": {
+          "Unidad_de_pedido_de_compra": "1"
         }
       }
     },
@@ -180,10 +216,20 @@ Devuelve:
           "type": "Empresa",
           "multiplier": "1"
         }
+      },
+      "relations": {
+        "active": {
+          "Empresa": "1"
+        },
+        "passive": {}
       }
     },
     "Factura": {
-      "columns": {}
+      "columns": {},
+      "relations": {
+        "active": {},
+        "passive": {}
+      }
     },
     "Pedido_de_compra": {
       "columns": {
@@ -197,6 +243,13 @@ Devuelve:
           "type": "Unidad_de_pedido_de_compra",
           "multiplier": "N"
         }
+      },
+      "relations": {
+        "active": {
+          "Cliente": "1",
+          "Unidad_de_pedido_de_compra": "N"
+        },
+        "passive": {}
       }
     },
     "Unidad_de_pedido_de_compra": {
@@ -208,7 +261,15 @@ Devuelve:
         },
         "cantidad": {
           "name": "cantidad",
-          "type": "Integer"
+          "type": "INTEGER"
+        }
+      },
+      "relations": {
+        "active": {
+          "Producto": "1"
+        },
+        "passive": {
+          "Pedido_de_compra": "N"
         }
       }
     },
@@ -219,6 +280,12 @@ Devuelve:
           "type": "Proceso_de_compra",
           "multiplier": "N"
         }
+      },
+      "relations": {
+        "active": {
+          "Proceso_de_compra": "N"
+        },
+        "passive": {}
       }
     },
     "Venta": {
@@ -228,16 +295,32 @@ Devuelve:
           "type": "Proceso_de_venta",
           "multiplier": "N"
         }
+      },
+      "relations": {
+        "active": {
+          "Proceso_de_venta": "N"
+        },
+        "passive": {}
       }
     },
     "Compra": {
-      "columns": {}
+      "columns": {},
+      "relations": {
+        "active": {},
+        "passive": {}
+      }
     },
     "Proceso_de_venta": {
       "columns": {
         "detalles": {
           "name": "detalles",
-          "type": "String"
+          "type": "VARCHAR(255)"
+        }
+      },
+      "relations": {
+        "active": {},
+        "passive": {
+          "Venta": "N"
         }
       }
     },
@@ -245,11 +328,17 @@ Devuelve:
       "columns": {
         "detalles": {
           "name": "detalles",
-          "type": "String",
+          "type": "VARCHAR(255)",
           "spec": {
             "unique": true,
             "not null": true
           }
+        }
+      },
+      "relations": {
+        "active": {},
+        "passive": {
+          "Albaran": "N"
         }
       }
     }
@@ -269,6 +358,26 @@ Devuelve:
     "Compra",
     "Proceso_de_venta",
     "Proceso_de_compra"
+  ],
+  "sql": [
+    "CREATE TABLE Persona (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255),\n  edad INTEGER,\n  nacimiento DATETIME,\n  domicilio VARCHAR(255),\n  descripcion VARCHAR(255)\n);",
+    "CREATE TABLE Cliente (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  persona INTEGER REFERENCES Persona (id)\n);",
+    "CREATE TABLE Perfil_en_empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  empresa INTEGER REFERENCES Empresa (id)\n);",
+    "CREATE TABLE Empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255),\n  fecha_de_inicio DATETIME,\n  sector VARCHAR(255),\n  industria VARCHAR(255)\n);",
+    "CREATE TABLE Producto (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  modelo VARCHAR(255),\n  descripcion VARCHAR(255),\n  precio_unitario FLOAT,\n  moneda VARCHAR(255)\n);",
+    "CREATE TABLE Proveedor (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  empresa INTEGER REFERENCES Empresa (id)\n);",
+    "CREATE TABLE Factura (\n  id INTEGER PRIMARY KEY AUTOINCREMENT\n);",
+    "CREATE TABLE Pedido_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  cliente INTEGER REFERENCES Cliente (id)\n);",
+    "CREATE TABLE Unidad_de_pedido_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  producto INTEGER REFERENCES Producto (id),\n  cantidad INTEGER\n);",
+    "CREATE TABLE Albaran (\n  id INTEGER PRIMARY KEY AUTOINCREMENT\n);",
+    "CREATE TABLE Venta (\n  id INTEGER PRIMARY KEY AUTOINCREMENT\n);",
+    "CREATE TABLE Compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT\n);",
+    "CREATE TABLE Proceso_de_venta (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  detalles VARCHAR(255)\n);",
+    "CREATE TABLE Proceso_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  detalles VARCHAR(255)\n);",
+    "CREATE TABLE x_Cliente_x_Perfil_en_empresa (  id INTEGER PRIMARY KEY AUTOINCREMENT,  id_Cliente INTEGER REFERENCES Perfil_en_empresa (id),  id_Perfil_en_empresa INTEGER REFERENCES Perfil_en_empresa (id))",
+    "CREATE TABLE x_Pedido_de_compra_x_Unidad_de_pedido_de_compra (  id INTEGER PRIMARY KEY AUTOINCREMENT,  id_Pedido_de_compra INTEGER REFERENCES Unidad_de_pedido_de_compra (id),  id_Unidad_de_pedido_de_compra INTEGER REFERENCES Unidad_de_pedido_de_compra (id))",
+    "CREATE TABLE x_Albaran_x_Proceso_de_compra (  id INTEGER PRIMARY KEY AUTOINCREMENT,  id_Albaran INTEGER REFERENCES Proceso_de_compra (id),  id_Proceso_de_compra INTEGER REFERENCES Proceso_de_compra (id))",
+    "CREATE TABLE x_Venta_x_Proceso_de_venta (  id INTEGER PRIMARY KEY AUTOINCREMENT,  id_Venta INTEGER REFERENCES Proceso_de_venta (id),  id_Proceso_de_venta INTEGER REFERENCES Proceso_de_venta (id))"
   ]
 }
 ```

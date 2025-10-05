@@ -66,10 +66,102 @@
         return order;
     };
 
+    const KNOWN_TYPES = [
+        "VARCHAR",
+        "INTEGER",
+        "FLOAT",
+        "DATETIME",
+    ];
+
+    const isKnownType = function(columnType) {
+        for(let index=0; index<KNOWN_TYPES.length; index++) {
+        const knownType = KNOWN_TYPES[index];
+            if(columnType.startsWith(knownType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const getSqlScript = function(ast, creationOrder) {
+        const sqlSentences = [];
+        const sqlIntermediateTablesSentences = [];
+        for(let indexTable=0; indexTable<creationOrder.length; indexTable++) {
+          const tableId = creationOrder[indexTable];
+          const tableMetadata = ast.tables[tableId];
+          let sql = "";
+          sql += `CREATE TABLE ${tableId} (\n`;
+          sql += `  id INTEGER PRIMARY KEY AUTOINCREMENT`;
+          const columnIds = Object.keys(tableMetadata.columns);
+          Iterating_columns:
+          for(let indexColumn=0; indexColumn<columnIds.length; indexColumn++) {
+            const columnId = columnIds[indexColumn];
+            const columnMetadata = tableMetadata.columns[columnId];
+            const columnType = columnMetadata.type;
+            if(isKnownType(columnType)) {
+                sql += `,\n  ${columnId} ${columnType}`;
+            } else if(columnMetadata.multiplier === "1") {
+                sql += `,\n  ${columnId} INTEGER REFERENCES ${columnType} (id)`;
+            } else if(columnMetadata.multiplier === "N") {
+                let sqlIntermediate = `CREATE TABLE x_${tableId}_x_${columnType} (`;
+                sqlIntermediate += `  id INTEGER PRIMARY KEY AUTOINCREMENT,`;
+                sqlIntermediate += `  id_${tableId} INTEGER REFERENCES ${columnType} (id),`;
+                sqlIntermediate += `  id_${columnType} INTEGER REFERENCES ${columnType} (id)`;
+                sqlIntermediate += `)`;
+                sqlIntermediateTablesSentences.push(sqlIntermediate);
+            }
+            // @TODO: especificaciones:
+            // @TODO: especificaciones:
+            // @TODO: especificaciones:
+            // @TODO: especificaciones:
+          }
+          sql += `\n);`;
+          sqlSentences.push(sql);
+        }
+        return sqlSentences.concat(sqlIntermediateTablesSentences);
+    };
+
+    const expandTablesData = function(ast) {
+        const tableIds = Object.keys(ast.tables);
+        for(let indexTable1=0; indexTable1<tableIds.length; indexTable1++) {
+            const tableId1 = tableIds[indexTable1];
+            ast.tables[tableId1].relations = {
+                active: {},
+                passive: {},
+            };
+            const columnIds1 = Object.keys(ast.tables[tableId1].columns);
+            Iterating_columns_1:
+            for(let indexColumns1=0; indexColumns1<columnIds1.length; indexColumns1++) {
+                const columnId1 = columnIds1[indexColumns1];
+                const columnMetadata = ast.tables[tableId1].columns[columnId1];
+                const columnType = columnMetadata.type;
+                if(isKnownType(columnType)) {
+                    continue Iterating_columns_1;
+                }
+                ast.tables[tableId1].relations.active[columnType] = columnMetadata.multiplier;
+            }
+            for(let indexTable2=0; indexTable2<tableIds.length; indexTable2++) {
+                const tableId2 = tableIds[indexTable2];
+                const columnIds2 = Object.keys(ast.tables[tableId2].columns);
+                for(let indexColumns2=0; indexColumns2<columnIds2.length; indexColumns2++) {
+                    const columnId2 = columnIds2[indexColumns2];
+                    const columnMetadata = ast.tables[tableId2].columns[columnId2];
+                    const matchesTableRef = (columnMetadata.type === tableId1);
+                    if(matchesTableRef) {
+                        ast.tables[tableId1].relations.passive[tableId2] = columnMetadata.multiplier;
+                    }
+                }
+            }
+        }
+    };
+
     const getOutputFrom = function(astList) {
-        const ast = tablesToObject(astList);
-        const creationOrder = getTableCreationOrder(ast);
-        return { tables: ast, creationOrder };
+        const tables = tablesToObject(astList);
+        const creationOrder = getTableCreationOrder(tables);
+        const ast = { tables, creationOrder };
+        const sql = getSqlScript(ast, creationOrder);
+        expandTablesData(ast);
+        return { ...ast, sql };
     };
 
 }
@@ -95,15 +187,23 @@ Column_definition =
     column:Sql_word
     token2:(_* "=" _*)
     tipo:Column_type
-        { return { name: column, ...tipo } }
+        { return { name: column.trim(), ...tipo } }
 
 Column_type =
     token1:(_*)
-    tipo:Sql_word
+    tipo:Sql_word_for_column_type
     multiplicador:Column_multiplier?
     especificaciones:Column_specifications?
         { return { type: tipo, multiplier: multiplicador || undefined, spec: Object.keys(especificaciones).length ? especificaciones : undefined } }
     
+Sql_word_for_column_type = 
+    word:Sql_word
+    token1:(_*)
+    parenthesys:Sql_type_length?
+        { return text().trim() }
+
+Sql_type_length = "(" (!(")"/EOL) .)+ ")" { return text() }
+
 Column_multiplier = 
     token1:(_* "*" _*)
     multiplicador:("1" / "N")
@@ -145,9 +245,11 @@ Column_clause_for_option = _* t:Text_unit { return t }
 
 Text_unit = '"' (!('"') .)* '"' { return JSON.parse(text()) }
 
-Number_unit = [0-9]+ ("." [0-9]+)? { return text() }
+Number_unit = [0-9]+ ("." [0-9]+)? { return text().trim() }
 
-Sql_word = [A-Za-z_] [A-Za-z_$]* { return text() }
+Sql_word = [A-Za-z_] [A-Za-z_$]* { return text().trim() }
+
+EOL = ___
 
 _ = __ / ___
 __ = "\t" / " "

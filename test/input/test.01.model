@@ -1,9 +1,9 @@
 Persona {
-  nombre = String { not null unique }
-  edad = Integer { default 18 }
-  nacimiento = Date { null }
-  domicilio = String { null }
-  descripcion = String { default ""}
+  nombre = VARCHAR(255) { not null unique }
+  edad = INTEGER { default 18 }
+  nacimiento = DATETIME { null }
+  domicilio = VARCHAR(255) { null }
+  descripcion = VARCHAR(255) { default ""}
 }
 Cliente {
   persona = Persona * 1 {}
@@ -13,16 +13,16 @@ Perfil_en_empresa {
   empresa = Empresa * 1 {}
 }
 Empresa {
-  nombre = String {}
-  fecha_de_inicio = Date {}
-  sector = String {}
-  industria = String {}
+  nombre = VARCHAR(255) {}
+  fecha_de_inicio = DATETIME {}
+  sector = VARCHAR(255) {}
+  industria = VARCHAR(255) {}
 }
 Producto {
-  modelo = String {}
-  descripcion = String {}
-  precio_unitario = Float {}
-  moneda = String { default "Euro" options { "Euro" "Dólar" } }
+  modelo = VARCHAR(255) {}
+  descripcion = VARCHAR(255) {}
+  precio_unitario = FLOAT {}
+  moneda = VARCHAR(255) { default "Euro" options { "Euro" "Dólar" } }
 }
 Proveedor {
   empresa = Empresa * 1 {}
@@ -34,7 +34,7 @@ Pedido_de_compra {
 }
 Unidad_de_pedido_de_compra {
   producto = Producto * 1 {}
-  cantidad = Integer {}
+  cantidad = INTEGER {}
 }
 Albaran {
   procesos_de_compra = Proceso_de_compra * N {}
@@ -44,8 +44,8 @@ Venta {
 }
 Compra {}
 Proceso_de_venta {
-  detalles = String {}
+  detalles = VARCHAR(255) {}
 }
 Proceso_de_compra {
-  detalles = String { unique not null }
+  detalles = VARCHAR(255) { unique not null }
 }
