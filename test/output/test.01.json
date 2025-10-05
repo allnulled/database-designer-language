@@ -35,7 +35,7 @@
           "name": "descripcion",
           "type": "VARCHAR(255)",
           "spec": {
-            "default": true
+            "default": ""
           }
         }
       },
@@ -297,11 +297,11 @@
     "Proceso_de_compra"
   ],
   "sql": [
-    "CREATE TABLE Persona (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255),\n  edad INTEGER,\n  nacimiento DATETIME,\n  domicilio VARCHAR(255),\n  descripcion VARCHAR(255)\n);",
+    "CREATE TABLE Persona (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255) NOT NULL UNIQUE,\n  edad INTEGER DEFAULT \"18\",\n  nacimiento DATETIME NULL,\n  domicilio VARCHAR(255) NULL,\n  descripcion VARCHAR(255) DEFAULT \"\"\n);",
     "CREATE TABLE Cliente (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  persona INTEGER REFERENCES Persona (id)\n);",
     "CREATE TABLE Perfil_en_empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  empresa INTEGER REFERENCES Empresa (id)\n);",
     "CREATE TABLE Empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255),\n  fecha_de_inicio DATETIME,\n  sector VARCHAR(255),\n  industria VARCHAR(255)\n);",
-    "CREATE TABLE Producto (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  modelo VARCHAR(255),\n  descripcion VARCHAR(255),\n  precio_unitario FLOAT,\n  moneda VARCHAR(255)\n);",
+    "CREATE TABLE Producto (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  modelo VARCHAR(255),\n  descripcion VARCHAR(255),\n  precio_unitario FLOAT,\n  moneda VARCHAR(255) DEFAULT \"Euro\"\n);",
     "CREATE TABLE Proveedor (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  empresa INTEGER REFERENCES Empresa (id)\n);",
     "CREATE TABLE Factura (\n  id INTEGER PRIMARY KEY AUTOINCREMENT\n);",
     "CREATE TABLE Pedido_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  cliente INTEGER REFERENCES Cliente (id)\n);",
@@ -310,7 +310,7 @@
     "CREATE TABLE Venta (\n  id INTEGER PRIMARY KEY AUTOINCREMENT\n);",
     "CREATE TABLE Compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT\n);",
     "CREATE TABLE Proceso_de_venta (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  detalles VARCHAR(255)\n);",
-    "CREATE TABLE Proceso_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  detalles VARCHAR(255)\n);",
+    "CREATE TABLE Proceso_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  detalles VARCHAR(255) UNIQUE NOT NULL\n);",
     "CREATE TABLE x_Cliente_x_Perfil_en_empresa (  id INTEGER PRIMARY KEY AUTOINCREMENT,  id_Cliente INTEGER REFERENCES Perfil_en_empresa (id),  id_Perfil_en_empresa INTEGER REFERENCES Perfil_en_empresa (id))",
     "CREATE TABLE x_Pedido_de_compra_x_Unidad_de_pedido_de_compra (  id INTEGER PRIMARY KEY AUTOINCREMENT,  id_Pedido_de_compra INTEGER REFERENCES Unidad_de_pedido_de_compra (id),  id_Unidad_de_pedido_de_compra INTEGER REFERENCES Unidad_de_pedido_de_compra (id))",
     "CREATE TABLE x_Albaran_x_Proceso_de_compra (  id INTEGER PRIMARY KEY AUTOINCREMENT,  id_Albaran INTEGER REFERENCES Proceso_de_compra (id),  id_Proceso_de_compra INTEGER REFERENCES Proceso_de_compra (id))",

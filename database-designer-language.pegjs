@@ -24,7 +24,7 @@
         const obj = {};
         for(let index=0; index<specifications.length; index++) {
           const specification = specifications[index];
-          obj[specification.tipo] = specification.arg || true;
+          obj[specification.tipo] = typeof specification.arg !== "undefined" ? specification.arg : true;
         }
         return obj;
     };
@@ -100,6 +100,18 @@
             const columnType = columnMetadata.type;
             if(isKnownType(columnType)) {
                 sql += `,\n  ${columnId} ${columnType}`;
+                for(let prop in columnMetadata.spec) {
+                    const val = columnMetadata.spec[prop];
+                    if(prop === "null") {
+                        sql += " NULL";
+                    } else if(prop === "not null") {
+                        sql += " NOT NULL";
+                    } else if(prop === "unique") {
+                        sql += " UNIQUE";
+                    } else if(prop === "default") {
+                        sql += " DEFAULT " + JSON.stringify(val);
+                    }
+                }
             } else if(columnMetadata.multiplier === "1") {
                 sql += `,\n  ${columnId} INTEGER REFERENCES ${columnType} (id)`;
             } else if(columnMetadata.multiplier === "N") {
@@ -110,10 +122,6 @@
                 sqlIntermediate += `)`;
                 sqlIntermediateTablesSentences.push(sqlIntermediate);
             }
-            // @TODO: especificaciones:
-            // @TODO: especificaciones:
-            // @TODO: especificaciones:
-            // @TODO: especificaciones:
           }
           sql += `\n);`;
           sqlSentences.push(sql);
@@ -226,9 +234,9 @@ Column_specification =
     )
         { return specification }
 
-Column_clause_for_not_null = "not null" { return { tipo: "not null" } }
-Column_clause_for_null = "null" { return { tipo: "null" } }
-Column_clause_for_unique = "unique" { return { tipo: "unique" } }
+Column_clause_for_not_null = "not null" { return { tipo: "not null", arg: true } }
+Column_clause_for_null = "null" { return { tipo: "null", arg: true } }
+Column_clause_for_unique = "unique" { return { tipo: "unique", arg: true } }
 
 Column_clause_for_default = 
     token1:("default" _+)
