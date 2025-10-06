@@ -209,12 +209,6 @@
             "destinationTable": "Empresa",
             "destinationColumn": "id",
             "multiplier": "1"
-          },
-          {
-            "sourceTable": "Perfil_en_empresa",
-            "sourceColumn": "activo",
-            "destinationTable": "BOOLEAN",
-            "destinationColumn": "id"
           }
         ],
         "passive": [
@@ -885,7 +879,7 @@
   "sql": [
     "CREATE TABLE Persona (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255) NOT NULL UNIQUE,\n  edad INTEGER DEFAULT 18,\n  nacimiento DATETIME NULL,\n  domicilio VARCHAR(255) NULL,\n  descripcion VARCHAR(255) DEFAULT \"\",\n  email VARCHAR(255) UNIQUE NULL,\n  telefono VARCHAR(20) NULL,\n  genero VARCHAR(20) NULL\n);",
     "CREATE TABLE Cliente (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  persona INTEGER REFERENCES Persona (id),\n  fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,\n  estado VARCHAR(20) DEFAULT \"Activo\"\n);",
-    "CREATE TABLE Perfil_en_empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  cliente INTEGER REFERENCES Cliente (id),\n  empresa INTEGER REFERENCES Empresa (id),\n  cargo VARCHAR(255) NULL,\n  fecha_ingreso DATETIME NULL\n);",
+    "CREATE TABLE Perfil_en_empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  cliente INTEGER REFERENCES Cliente (id),\n  empresa INTEGER REFERENCES Empresa (id),\n  cargo VARCHAR(255) NULL,\n  fecha_ingreso DATETIME NULL,\n  activo BOOLEAN DEFAULT true\n);",
     "CREATE TABLE Empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255) NOT NULL UNIQUE,\n  fecha_de_inicio DATETIME NULL,\n  sector VARCHAR(255) NULL,\n  industria VARCHAR(255) NULL,\n  direccion_fiscal VARCHAR(255) NULL,\n  pais VARCHAR(100) NULL,\n  email_contacto VARCHAR(255) NULL\n);",
     "CREATE TABLE Producto (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  modelo VARCHAR(255) NOT NULL UNIQUE,\n  descripcion VARCHAR(255) NULL,\n  precio_unitario FLOAT NOT NULL,\n  moneda VARCHAR(255) DEFAULT \"Euro\",\n  stock_actual INTEGER DEFAULT 0,\n  sku VARCHAR(100) UNIQUE NULL\n);",
     "CREATE TABLE Proveedor (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  empresa INTEGER REFERENCES Empresa (id),\n  imagen VARCHAR(255) NULL,\n  descripcion VARCHAR(255) NULL,\n  telefono_contacto VARCHAR(20) NULL,\n  email_contacto VARCHAR(255) NULL\n);",

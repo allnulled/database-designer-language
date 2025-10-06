@@ -1824,6 +1824,7 @@
         };
 
         const KNOWN_TYPES = [
+            "BOOLEAN",
             "VARCHAR",
             "INTEGER",
             "FLOAT",
