@@ -35,7 +35,7 @@
           "name": "descripcion",
           "type": "VARCHAR(255)",
           "spec": {
-            "default": ""
+            "default": "\"\""
           }
         },
         "email": {
@@ -73,10 +73,16 @@
         }
       },
       "relations": {
-        "active": {},
-        "passive": {
-          "Cliente": "1"
-        }
+        "active": [],
+        "passive": [
+          {
+            "sourceTable": "Persona",
+            "sourceColumn": "id",
+            "destinationTable": "Cliente",
+            "destinationColumn": "persona",
+            "multiplier": "1"
+          }
+        ]
       }
     },
     "Cliente": {
@@ -102,7 +108,7 @@
           "name": "estado",
           "type": "VARCHAR(20)",
           "spec": {
-            "default": "Activo",
+            "default": "\"Activo\"",
             "options": [
               "Activo",
               "Inactivo",
@@ -112,15 +118,46 @@
         }
       },
       "relations": {
-        "active": {
-          "Persona": "1",
-          "Perfil_en_empresa": "N"
-        },
-        "passive": {
-          "Perfil_en_empresa": "1",
-          "Factura": "1",
-          "Pedido_de_compra": "1"
-        }
+        "active": [
+          {
+            "sourceTable": "Cliente",
+            "sourceColumn": "persona",
+            "destinationTable": "Persona",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Cliente",
+            "sourceColumn": "perfiles_en_empresa",
+            "destinationTable": "Perfil_en_empresa",
+            "destinationColumn": "id",
+            "multiplier": "N",
+            "intermediateTable": "x_Cliente_x_perfiles_en_empresa_x_Perfil_en_empresa"
+          }
+        ],
+        "passive": [
+          {
+            "sourceTable": "Cliente",
+            "sourceColumn": "id",
+            "destinationTable": "Perfil_en_empresa",
+            "destinationColumn": "cliente",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Cliente",
+            "sourceColumn": "id",
+            "destinationTable": "Factura",
+            "destinationColumn": "cliente",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Cliente",
+            "sourceColumn": "id",
+            "destinationTable": "Pedido_de_compra",
+            "destinationColumn": "cliente",
+            "multiplier": "1"
+          }
+        ]
       }
     },
     "Perfil_en_empresa": {
@@ -158,13 +195,38 @@
         }
       },
       "relations": {
-        "active": {
-          "Cliente": "1",
-          "Empresa": "1"
-        },
-        "passive": {
-          "Cliente": "N"
-        }
+        "active": [
+          {
+            "sourceTable": "Perfil_en_empresa",
+            "sourceColumn": "cliente",
+            "destinationTable": "Cliente",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Perfil_en_empresa",
+            "sourceColumn": "empresa",
+            "destinationTable": "Empresa",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Perfil_en_empresa",
+            "sourceColumn": "activo",
+            "destinationTable": "BOOLEAN",
+            "destinationColumn": "id"
+          }
+        ],
+        "passive": [
+          {
+            "sourceTable": "Perfil_en_empresa",
+            "sourceColumn": "id",
+            "destinationTable": "Cliente",
+            "destinationColumn": "perfiles_en_empresa",
+            "multiplier": "N",
+            "intermediateTable": "x_Cliente_x_perfiles_en_empresa_x_Perfil_en_empresa"
+          }
+        ]
       }
     },
     "Empresa": {
@@ -221,11 +283,23 @@
         }
       },
       "relations": {
-        "active": {},
-        "passive": {
-          "Perfil_en_empresa": "1",
-          "Proveedor": "1"
-        }
+        "active": [],
+        "passive": [
+          {
+            "sourceTable": "Empresa",
+            "sourceColumn": "id",
+            "destinationTable": "Perfil_en_empresa",
+            "destinationColumn": "empresa",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Empresa",
+            "sourceColumn": "id",
+            "destinationTable": "Proveedor",
+            "destinationColumn": "empresa",
+            "multiplier": "1"
+          }
+        ]
       }
     },
     "Producto": {
@@ -256,7 +330,7 @@
           "name": "moneda",
           "type": "VARCHAR(255)",
           "spec": {
-            "default": "Euro",
+            "default": "\"Euro\"",
             "options": [
               "Euro",
               "Dólar"
@@ -280,12 +354,30 @@
         }
       },
       "relations": {
-        "active": {},
-        "passive": {
-          "Unidad_de_pedido_de_compra": "1",
-          "Proceso_de_compra": "1",
-          "Proceso_de_venta": "1"
-        }
+        "active": [],
+        "passive": [
+          {
+            "sourceTable": "Producto",
+            "sourceColumn": "id",
+            "destinationTable": "Unidad_de_pedido_de_compra",
+            "destinationColumn": "producto",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Producto",
+            "sourceColumn": "id",
+            "destinationTable": "Proceso_de_compra",
+            "destinationColumn": "producto",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Producto",
+            "sourceColumn": "id",
+            "destinationTable": "Proceso_de_venta",
+            "destinationColumn": "producto",
+            "multiplier": "1"
+          }
+        ]
       }
     },
     "Proveedor": {
@@ -325,12 +417,24 @@
         }
       },
       "relations": {
-        "active": {
-          "Empresa": "1"
-        },
-        "passive": {
-          "Compra": "1"
-        }
+        "active": [
+          {
+            "sourceTable": "Proveedor",
+            "sourceColumn": "empresa",
+            "destinationTable": "Empresa",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          }
+        ],
+        "passive": [
+          {
+            "sourceTable": "Proveedor",
+            "sourceColumn": "id",
+            "destinationTable": "Compra",
+            "destinationColumn": "proveedor",
+            "multiplier": "1"
+          }
+        ]
       }
     },
     "Factura": {
@@ -366,7 +470,7 @@
           "name": "moneda",
           "type": "VARCHAR(20)",
           "spec": {
-            "default": "Euro",
+            "default": "\"Euro\"",
             "options": [
               "Euro",
               "Dólar"
@@ -377,7 +481,7 @@
           "name": "estado",
           "type": "VARCHAR(20)",
           "spec": {
-            "default": "Pendiente",
+            "default": "\"Pendiente\"",
             "options": [
               "Pendiente",
               "Pagada",
@@ -387,10 +491,16 @@
         }
       },
       "relations": {
-        "active": {
-          "Cliente": "1"
-        },
-        "passive": {}
+        "active": [
+          {
+            "sourceTable": "Factura",
+            "sourceColumn": "cliente",
+            "destinationTable": "Cliente",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          }
+        ],
+        "passive": []
       }
     },
     "Pedido_de_compra": {
@@ -416,7 +526,7 @@
           "name": "estado",
           "type": "VARCHAR(20)",
           "spec": {
-            "default": "Solicitado",
+            "default": "\"Solicitado\"",
             "options": [
               "Solicitado",
               "Procesado",
@@ -427,13 +537,32 @@
         }
       },
       "relations": {
-        "active": {
-          "Cliente": "1",
-          "Unidad_de_pedido_de_compra": "N"
-        },
-        "passive": {
-          "Unidad_de_pedido_de_compra": "1"
-        }
+        "active": [
+          {
+            "sourceTable": "Pedido_de_compra",
+            "sourceColumn": "cliente",
+            "destinationTable": "Cliente",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Pedido_de_compra",
+            "sourceColumn": "producto_de_pedido_de_compra",
+            "destinationTable": "Unidad_de_pedido_de_compra",
+            "destinationColumn": "id",
+            "multiplier": "N",
+            "intermediateTable": "x_Pedido_de_compra_x_producto_de_pedido_de_compra_x_Unidad_de_pedido_de_compra"
+          }
+        ],
+        "passive": [
+          {
+            "sourceTable": "Pedido_de_compra",
+            "sourceColumn": "id",
+            "destinationTable": "Unidad_de_pedido_de_compra",
+            "destinationColumn": "pedido",
+            "multiplier": "1"
+          }
+        ]
       }
     },
     "Unidad_de_pedido_de_compra": {
@@ -464,13 +593,32 @@
         }
       },
       "relations": {
-        "active": {
-          "Pedido_de_compra": "1",
-          "Producto": "1"
-        },
-        "passive": {
-          "Pedido_de_compra": "N"
-        }
+        "active": [
+          {
+            "sourceTable": "Unidad_de_pedido_de_compra",
+            "sourceColumn": "pedido",
+            "destinationTable": "Pedido_de_compra",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          },
+          {
+            "sourceTable": "Unidad_de_pedido_de_compra",
+            "sourceColumn": "producto",
+            "destinationTable": "Producto",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          }
+        ],
+        "passive": [
+          {
+            "sourceTable": "Unidad_de_pedido_de_compra",
+            "sourceColumn": "id",
+            "destinationTable": "Pedido_de_compra",
+            "destinationColumn": "producto_de_pedido_de_compra",
+            "multiplier": "N",
+            "intermediateTable": "x_Pedido_de_compra_x_producto_de_pedido_de_compra_x_Unidad_de_pedido_de_compra"
+          }
+        ]
       }
     },
     "Proceso_de_compra": {
@@ -504,12 +652,25 @@
         }
       },
       "relations": {
-        "active": {
-          "Producto": "1"
-        },
-        "passive": {
-          "Albaran": "N"
-        }
+        "active": [
+          {
+            "sourceTable": "Proceso_de_compra",
+            "sourceColumn": "producto",
+            "destinationTable": "Producto",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          }
+        ],
+        "passive": [
+          {
+            "sourceTable": "Proceso_de_compra",
+            "sourceColumn": "id",
+            "destinationTable": "Albaran",
+            "destinationColumn": "procesos_de_compra",
+            "multiplier": "N",
+            "intermediateTable": "x_Albaran_x_procesos_de_compra_x_Proceso_de_compra"
+          }
+        ]
       }
     },
     "Albaran": {
@@ -543,10 +704,17 @@
         }
       },
       "relations": {
-        "active": {
-          "Proceso_de_compra": "N"
-        },
-        "passive": {}
+        "active": [
+          {
+            "sourceTable": "Albaran",
+            "sourceColumn": "procesos_de_compra",
+            "destinationTable": "Proceso_de_compra",
+            "destinationColumn": "id",
+            "multiplier": "N",
+            "intermediateTable": "x_Albaran_x_procesos_de_compra_x_Proceso_de_compra"
+          }
+        ],
+        "passive": []
       }
     },
     "Proceso_de_venta": {
@@ -579,12 +747,25 @@
         }
       },
       "relations": {
-        "active": {
-          "Producto": "1"
-        },
-        "passive": {
-          "Venta": "N"
-        }
+        "active": [
+          {
+            "sourceTable": "Proceso_de_venta",
+            "sourceColumn": "producto",
+            "destinationTable": "Producto",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          }
+        ],
+        "passive": [
+          {
+            "sourceTable": "Proceso_de_venta",
+            "sourceColumn": "id",
+            "destinationTable": "Venta",
+            "destinationColumn": "procesos_de_venta",
+            "multiplier": "N",
+            "intermediateTable": "x_Venta_x_procesos_de_venta_x_Proceso_de_venta"
+          }
+        ]
       }
     },
     "Venta": {
@@ -612,15 +793,22 @@
           "name": "moneda",
           "type": "VARCHAR(20)",
           "spec": {
-            "default": "Euro"
+            "default": "\"Euro\""
           }
         }
       },
       "relations": {
-        "active": {
-          "Proceso_de_venta": "N"
-        },
-        "passive": {}
+        "active": [
+          {
+            "sourceTable": "Venta",
+            "sourceColumn": "procesos_de_venta",
+            "destinationTable": "Proceso_de_venta",
+            "destinationColumn": "id",
+            "multiplier": "N",
+            "intermediateTable": "x_Venta_x_procesos_de_venta_x_Proceso_de_venta"
+          }
+        ],
+        "passive": []
       }
     },
     "Compra": {
@@ -648,14 +836,14 @@
           "name": "moneda",
           "type": "VARCHAR(20)",
           "spec": {
-            "default": "Euro"
+            "default": "\"Euro\""
           }
         },
         "estado": {
           "name": "estado",
           "type": "VARCHAR(20)",
           "spec": {
-            "default": "Pendiente",
+            "default": "\"Pendiente\"",
             "options": [
               "Pendiente",
               "Completada",
@@ -665,10 +853,16 @@
         }
       },
       "relations": {
-        "active": {
-          "Proveedor": "1"
-        },
-        "passive": {}
+        "active": [
+          {
+            "sourceTable": "Compra",
+            "sourceColumn": "proveedor",
+            "destinationTable": "Proveedor",
+            "destinationColumn": "id",
+            "multiplier": "1"
+          }
+        ],
+        "passive": []
       }
     }
   },
@@ -689,23 +883,23 @@
     "Compra"
   ],
   "sql": [
-    "CREATE TABLE Persona (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255) NOT NULL UNIQUE,\n  edad INTEGER DEFAULT \"18\",\n  nacimiento DATETIME NULL,\n  domicilio VARCHAR(255) NULL,\n  descripcion VARCHAR(255) DEFAULT \"\",\n  email VARCHAR(255) UNIQUE NULL,\n  telefono VARCHAR(20) NULL,\n  genero VARCHAR(20) NULL\n);",
-    "CREATE TABLE Cliente (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  persona INTEGER REFERENCES Persona (id),\n  fecha_registro DATETIME DEFAULT \"CURRENT_TIMESTAMP\",\n  estado VARCHAR(20) DEFAULT \"Activo\"\n);",
+    "CREATE TABLE Persona (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255) NOT NULL UNIQUE,\n  edad INTEGER DEFAULT 18,\n  nacimiento DATETIME NULL,\n  domicilio VARCHAR(255) NULL,\n  descripcion VARCHAR(255) DEFAULT \"\",\n  email VARCHAR(255) UNIQUE NULL,\n  telefono VARCHAR(20) NULL,\n  genero VARCHAR(20) NULL\n);",
+    "CREATE TABLE Cliente (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  persona INTEGER REFERENCES Persona (id),\n  fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,\n  estado VARCHAR(20) DEFAULT \"Activo\"\n);",
     "CREATE TABLE Perfil_en_empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  cliente INTEGER REFERENCES Cliente (id),\n  empresa INTEGER REFERENCES Empresa (id),\n  cargo VARCHAR(255) NULL,\n  fecha_ingreso DATETIME NULL\n);",
     "CREATE TABLE Empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre VARCHAR(255) NOT NULL UNIQUE,\n  fecha_de_inicio DATETIME NULL,\n  sector VARCHAR(255) NULL,\n  industria VARCHAR(255) NULL,\n  direccion_fiscal VARCHAR(255) NULL,\n  pais VARCHAR(100) NULL,\n  email_contacto VARCHAR(255) NULL\n);",
-    "CREATE TABLE Producto (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  modelo VARCHAR(255) NOT NULL UNIQUE,\n  descripcion VARCHAR(255) NULL,\n  precio_unitario FLOAT NOT NULL,\n  moneda VARCHAR(255) DEFAULT \"Euro\",\n  stock_actual INTEGER DEFAULT \"0\",\n  sku VARCHAR(100) UNIQUE NULL\n);",
+    "CREATE TABLE Producto (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  modelo VARCHAR(255) NOT NULL UNIQUE,\n  descripcion VARCHAR(255) NULL,\n  precio_unitario FLOAT NOT NULL,\n  moneda VARCHAR(255) DEFAULT \"Euro\",\n  stock_actual INTEGER DEFAULT 0,\n  sku VARCHAR(100) UNIQUE NULL\n);",
     "CREATE TABLE Proveedor (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  empresa INTEGER REFERENCES Empresa (id),\n  imagen VARCHAR(255) NULL,\n  descripcion VARCHAR(255) NULL,\n  telefono_contacto VARCHAR(20) NULL,\n  email_contacto VARCHAR(255) NULL\n);",
-    "CREATE TABLE Factura (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  numero VARCHAR(50) NOT NULL UNIQUE,\n  cliente INTEGER REFERENCES Cliente (id),\n  fecha_emision DATETIME DEFAULT \"CURRENT_TIMESTAMP\",\n  monto_total FLOAT NOT NULL,\n  moneda VARCHAR(20) DEFAULT \"Euro\",\n  estado VARCHAR(20) DEFAULT \"Pendiente\"\n);",
-    "CREATE TABLE Pedido_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  cliente INTEGER REFERENCES Cliente (id),\n  fecha_pedido DATETIME DEFAULT \"CURRENT_TIMESTAMP\",\n  estado VARCHAR(20) DEFAULT \"Solicitado\"\n);",
+    "CREATE TABLE Factura (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  numero VARCHAR(50) NOT NULL UNIQUE,\n  cliente INTEGER REFERENCES Cliente (id),\n  fecha_emision DATETIME DEFAULT CURRENT_TIMESTAMP,\n  monto_total FLOAT NOT NULL,\n  moneda VARCHAR(20) DEFAULT \"Euro\",\n  estado VARCHAR(20) DEFAULT \"Pendiente\"\n);",
+    "CREATE TABLE Pedido_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  cliente INTEGER REFERENCES Cliente (id),\n  fecha_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,\n  estado VARCHAR(20) DEFAULT \"Solicitado\"\n);",
     "CREATE TABLE Unidad_de_pedido_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  pedido INTEGER REFERENCES Pedido_de_compra (id),\n  producto INTEGER REFERENCES Producto (id),\n  cantidad INTEGER NOT NULL,\n  precio_unitario FLOAT NULL\n);",
     "CREATE TABLE Proceso_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  detalles VARCHAR(255) UNIQUE NOT NULL,\n  producto INTEGER REFERENCES Producto (id),\n  cantidad INTEGER NOT NULL,\n  precio_unitario FLOAT NOT NULL\n);",
-    "CREATE TABLE Albaran (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  fecha_entrega DATETIME DEFAULT \"CURRENT_TIMESTAMP\",\n  numero_albaran VARCHAR(50) NOT NULL UNIQUE,\n  observaciones VARCHAR(255) NULL\n);",
+    "CREATE TABLE Albaran (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  fecha_entrega DATETIME DEFAULT CURRENT_TIMESTAMP,\n  numero_albaran VARCHAR(50) NOT NULL UNIQUE,\n  observaciones VARCHAR(255) NULL\n);",
     "CREATE TABLE Proceso_de_venta (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  detalles VARCHAR(255) NOT NULL,\n  producto INTEGER REFERENCES Producto (id),\n  cantidad INTEGER NOT NULL,\n  precio_unitario FLOAT NOT NULL\n);",
-    "CREATE TABLE Venta (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  fecha_venta DATETIME DEFAULT \"CURRENT_TIMESTAMP\",\n  total FLOAT NOT NULL,\n  moneda VARCHAR(20) DEFAULT \"Euro\"\n);",
-    "CREATE TABLE Compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  proveedor INTEGER REFERENCES Proveedor (id),\n  fecha_compra DATETIME DEFAULT \"CURRENT_TIMESTAMP\",\n  total FLOAT NOT NULL,\n  moneda VARCHAR(20) DEFAULT \"Euro\",\n  estado VARCHAR(20) DEFAULT \"Pendiente\"\n);",
-    "CREATE TABLE x_Cliente_x_Perfil_en_empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  id_Cliente INTEGER REFERENCES Perfil_en_empresa (id),\n  id_Perfil_en_empresa INTEGER REFERENCES Perfil_en_empresa (id)\n);",
-    "CREATE TABLE x_Pedido_de_compra_x_Unidad_de_pedido_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  id_Pedido_de_compra INTEGER REFERENCES Unidad_de_pedido_de_compra (id),\n  id_Unidad_de_pedido_de_compra INTEGER REFERENCES Unidad_de_pedido_de_compra (id)\n);",
-    "CREATE TABLE x_Albaran_x_Proceso_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  id_Albaran INTEGER REFERENCES Proceso_de_compra (id),\n  id_Proceso_de_compra INTEGER REFERENCES Proceso_de_compra (id)\n);",
-    "CREATE TABLE x_Venta_x_Proceso_de_venta (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  id_Venta INTEGER REFERENCES Proceso_de_venta (id),\n  id_Proceso_de_venta INTEGER REFERENCES Proceso_de_venta (id)\n);"
+    "CREATE TABLE Venta (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP,\n  total FLOAT NOT NULL,\n  moneda VARCHAR(20) DEFAULT \"Euro\"\n);",
+    "CREATE TABLE Compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  proveedor INTEGER REFERENCES Proveedor (id),\n  fecha_compra DATETIME DEFAULT CURRENT_TIMESTAMP,\n  total FLOAT NOT NULL,\n  moneda VARCHAR(20) DEFAULT \"Euro\",\n  estado VARCHAR(20) DEFAULT \"Pendiente\"\n);",
+    "CREATE TABLE x_Cliente_x_perfiles_en_empresa_x_Perfil_en_empresa (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  id_Cliente INTEGER REFERENCES Perfil_en_empresa (id),\n  id_Perfil_en_empresa INTEGER REFERENCES Perfil_en_empresa (id)\n);",
+    "CREATE TABLE x_Pedido_de_compra_x_producto_de_pedido_de_compra_x_Unidad_de_pedido_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  id_Pedido_de_compra INTEGER REFERENCES Unidad_de_pedido_de_compra (id),\n  id_Unidad_de_pedido_de_compra INTEGER REFERENCES Unidad_de_pedido_de_compra (id)\n);",
+    "CREATE TABLE x_Albaran_x_procesos_de_compra_x_Proceso_de_compra (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  id_Albaran INTEGER REFERENCES Proceso_de_compra (id),\n  id_Proceso_de_compra INTEGER REFERENCES Proceso_de_compra (id)\n);",
+    "CREATE TABLE x_Venta_x_procesos_de_venta_x_Proceso_de_venta (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  id_Venta INTEGER REFERENCES Proceso_de_venta (id),\n  id_Proceso_de_venta INTEGER REFERENCES Proceso_de_venta (id)\n);"
   ]
 }

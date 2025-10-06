@@ -109,13 +109,13 @@
                     } else if(prop === "unique") {
                         sql += " UNIQUE";
                     } else if(prop === "default") {
-                        sql += " DEFAULT " + JSON.stringify(val);
+                        sql += " DEFAULT " + val;
                     }
                 }
             } else if(columnMetadata.multiplier === "1") {
                 sql += `,\n  ${columnId} INTEGER REFERENCES ${columnType} (id)`;
             } else if(columnMetadata.multiplier === "N") {
-                let sqlIntermediate = `CREATE TABLE x_${tableId}_x_${columnType} (`;
+                let sqlIntermediate = `CREATE TABLE x_${tableId}_x_${columnId}_x_${columnType} (`;
                 sqlIntermediate += `\n  id INTEGER PRIMARY KEY AUTOINCREMENT,`;
                 sqlIntermediate += `\n  id_${tableId} INTEGER REFERENCES ${columnType} (id),`;
                 sqlIntermediate += `\n  id_${columnType} INTEGER REFERENCES ${columnType} (id)`;
@@ -134,8 +134,8 @@
         for(let indexTable1=0; indexTable1<tableIds.length; indexTable1++) {
             const tableId1 = tableIds[indexTable1];
             ast.tables[tableId1].relations = {
-                active: {},
-                passive: {},
+                active: [],
+                passive: [],
             };
             const columnIds1 = Object.keys(ast.tables[tableId1].columns);
             Iterating_columns_1:
@@ -146,7 +146,14 @@
                 if(isKnownType(columnType)) {
                     continue Iterating_columns_1;
                 }
-                ast.tables[tableId1].relations.active[columnType] = columnMetadata.multiplier;
+                ast.tables[tableId1].relations.active.push({
+                    sourceTable: tableId1,
+                    sourceColumn: columnId1,
+                    destinationTable: columnType,
+                    destinationColumn: "id",
+                    multiplier: columnMetadata.multiplier,
+                    intermediateTable: columnMetadata.multiplier === "N" ? `x_${tableId1}_x_${columnId1}_x_${columnType}` : undefined,
+                });
             }
             for(let indexTable2=0; indexTable2<tableIds.length; indexTable2++) {
                 const tableId2 = tableIds[indexTable2];
@@ -156,7 +163,14 @@
                     const columnMetadata = ast.tables[tableId2].columns[columnId2];
                     const matchesTableRef = (columnMetadata.type === tableId1);
                     if(matchesTableRef) {
-                        ast.tables[tableId1].relations.passive[tableId2] = columnMetadata.multiplier;
+                        ast.tables[tableId1].relations.passive.push({
+                            sourceTable: tableId1,
+                            sourceColumn: "id",
+                            destinationTable: tableId2,
+                            destinationColumn: columnId2,
+                            multiplier: columnMetadata.multiplier,
+                            intermediateTable: columnMetadata.multiplier === "N" ? `x_${tableId2}_x_${columnId2}_x_${tableId1}` : undefined,
+                        });
                     }
                 }
             }
@@ -242,7 +256,7 @@ Column_clause_for_extras = "extra" _* "{{" cont:Negate_double_curly_close "}}" {
 
 Column_clause_for_default = 
     token1:("default" _+)
-    val:(Text_unit / Number_unit / Expression_unit)
+    val:(Text_unit_stringified / Number_unit / Expression_unit)
         { return { tipo: "default", arg: val } }
 
 Column_clause_for_options = 
@@ -253,7 +267,9 @@ Column_clause_for_options =
 
 Column_clause_for_option = _* t:Text_unit { return t }
 
-Text_unit = '"' (!('"') .)* '"' { return JSON.parse(text()) }
+Text_unit_stringified = '"' (!('"') .)* '"' { return text() }
+
+Text_unit = t:Text_unit_stringified { return JSON.parse(t) }
 
 Number_unit = [0-9]+ ("." [0-9]+)? { return text().trim() }
 

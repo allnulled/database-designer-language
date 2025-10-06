@@ -193,7 +193,7 @@
         peg$c49 = function(t) { return t },
         peg$c50 = "\"",
         peg$c51 = peg$literalExpectation("\"", false),
-        peg$c52 = function() { return JSON.parse(text()) },
+        peg$c52 = function(t) { return JSON.parse(t) },
         peg$c53 = /^[0-9]/,
         peg$c54 = peg$classExpectation([["0", "9"]], false, false),
         peg$c55 = ".",
@@ -1164,7 +1164,7 @@
         s1 = peg$FAILED;
       }
       if (s1 !== peg$FAILED) {
-        s2 = peg$parseText_unit();
+        s2 = peg$parseText_unit_stringified();
         if (s2 === peg$FAILED) {
           s2 = peg$parseNumber_unit();
           if (s2 === peg$FAILED) {
@@ -1322,7 +1322,7 @@
       return s0;
     }
 
-    function peg$parseText_unit() {
+    function peg$parseText_unit_stringified() {
       var s0, s1, s2, s3, s4, s5;
 
       s0 = peg$currPos;
@@ -1420,7 +1420,7 @@
           }
           if (s3 !== peg$FAILED) {
             peg$savedPos = s0;
-            s1 = peg$c52();
+            s1 = peg$c17();
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -1434,6 +1434,20 @@
         peg$currPos = s0;
         s0 = peg$FAILED;
       }
+
+      return s0;
+    }
+
+    function peg$parseText_unit() {
+      var s0, s1;
+
+      s0 = peg$currPos;
+      s1 = peg$parseText_unit_stringified();
+      if (s1 !== peg$FAILED) {
+        peg$savedPos = s0;
+        s1 = peg$c52(s1);
+      }
+      s0 = s1;
 
       return s0;
     }
@@ -1852,13 +1866,13 @@
                         } else if(prop === "unique") {
                             sql += " UNIQUE";
                         } else if(prop === "default") {
-                            sql += " DEFAULT " + JSON.stringify(val);
+                            sql += " DEFAULT " + val;
                         }
                     }
                 } else if(columnMetadata.multiplier === "1") {
                     sql += `,\n  ${columnId} INTEGER REFERENCES ${columnType} (id)`;
                 } else if(columnMetadata.multiplier === "N") {
-                    let sqlIntermediate = `CREATE TABLE x_${tableId}_x_${columnType} (`;
+                    let sqlIntermediate = `CREATE TABLE x_${tableId}_x_${columnId}_x_${columnType} (`;
                     sqlIntermediate += `\n  id INTEGER PRIMARY KEY AUTOINCREMENT,`;
                     sqlIntermediate += `\n  id_${tableId} INTEGER REFERENCES ${columnType} (id),`;
                     sqlIntermediate += `\n  id_${columnType} INTEGER REFERENCES ${columnType} (id)`;
@@ -1877,8 +1891,8 @@
             for(let indexTable1=0; indexTable1<tableIds.length; indexTable1++) {
                 const tableId1 = tableIds[indexTable1];
                 ast.tables[tableId1].relations = {
-                    active: {},
-                    passive: {},
+                    active: [],
+                    passive: [],
                 };
                 const columnIds1 = Object.keys(ast.tables[tableId1].columns);
                 Iterating_columns_1:
@@ -1889,7 +1903,14 @@
                     if(isKnownType(columnType)) {
                         continue Iterating_columns_1;
                     }
-                    ast.tables[tableId1].relations.active[columnType] = columnMetadata.multiplier;
+                    ast.tables[tableId1].relations.active.push({
+                        sourceTable: tableId1,
+                        sourceColumn: columnId1,
+                        destinationTable: columnType,
+                        destinationColumn: "id",
+                        multiplier: columnMetadata.multiplier,
+                        intermediateTable: columnMetadata.multiplier === "N" ? `x_${tableId1}_x_${columnId1}_x_${columnType}` : undefined,
+                    });
                 }
                 for(let indexTable2=0; indexTable2<tableIds.length; indexTable2++) {
                     const tableId2 = tableIds[indexTable2];
@@ -1899,7 +1920,14 @@
                         const columnMetadata = ast.tables[tableId2].columns[columnId2];
                         const matchesTableRef = (columnMetadata.type === tableId1);
                         if(matchesTableRef) {
-                            ast.tables[tableId1].relations.passive[tableId2] = columnMetadata.multiplier;
+                            ast.tables[tableId1].relations.passive.push({
+                                sourceTable: tableId1,
+                                sourceColumn: "id",
+                                destinationTable: tableId2,
+                                destinationColumn: columnId2,
+                                multiplier: columnMetadata.multiplier,
+                                intermediateTable: columnMetadata.multiplier === "N" ? `x_${tableId2}_x_${columnId2}_x_${tableId1}` : undefined,
+                            });
                         }
                     }
                 }
